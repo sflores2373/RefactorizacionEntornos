@@ -1,4 +1,7 @@
 package entidades;
+
+import java.time.LocalDateTime;
+
 /**
  * @author Sergio Flores
  * @version 1.0 
@@ -8,7 +11,7 @@ public class Reserva {
 	 * Atributos de clase
 	 */
     private int idPista;
-    private String fecha;
+    private LocalDateTime fecha;
     private int duracion;
     
     /**
@@ -17,7 +20,7 @@ public class Reserva {
      * @param fecha
      * @param duracion
      */
-    public Reserva(int idPista, String fecha, int duracion) {
+    public Reserva(int idPista, LocalDateTime fecha, int duracion) {
         this.idPista = idPista;
         this.fecha = fecha;
         this.duracion = duracion;
@@ -33,7 +36,7 @@ public class Reserva {
     /**
      * @return Devuelve la fecha de la reserva
      */
-    public String getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 

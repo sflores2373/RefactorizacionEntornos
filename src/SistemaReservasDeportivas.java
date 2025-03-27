@@ -3,6 +3,7 @@
  * @version 1.0
  */
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,8 @@ public class SistemaReservasDeportivas {
 	 * Atributos de clase
 	 */
     private List<Reserva> reservas;
-    private boolean[] iluminacion;
-    private static final int MAX_PISTAS = 10; // Asumimos un máximo de 10 pistas
+    GestorIluminacion data = new GestorIluminacion();
+	static final int MAX_PISTAS = 10; // Asumimos un máximo de 10 pistas
 
     /**
      * Crea un array dinamico que se encarga de almacenar las reservas aceptadas, 
@@ -23,7 +24,7 @@ public class SistemaReservasDeportivas {
      */
     public SistemaReservasDeportivas() {
         reservas = new ArrayList<>();
-        iluminacion = new boolean[MAX_PISTAS];
+        data.iluminacion = new boolean[MAX_PISTAS];
     }
 
     /**
@@ -33,16 +34,16 @@ public class SistemaReservasDeportivas {
      * @param duracion
      * @return true si todos los parametros introducidos son correctos, false si no es asi o la pista ya esta reservada
      */
-    public boolean reservarPista(int idPista, String fecha, int duracion) {
-        if (idPista < 0 || idPista >= MAX_PISTAS) {
+    public boolean reservarPista(Reserva reserva) {
+        if (reserva.getIdPista() < 0 || reserva.getIdPista() >= MAX_PISTAS) {
             return false; // ID de pista inválido
         }
         for (Reserva r : reservas) {
-            if (r.getIdPista() == idPista && r.getFecha().equals(fecha)) {
+            if (r.getIdPista() == reserva.getIdPista() && esFechaDisponible(reserva.getFecha(), r)) {
                 return false; // La pista ya está reservada en esa fecha
             }
         }
-        reservas.add(new Reserva(idPista, fecha, duracion));
+        reservas.add(reserva);
         return true;
     }
 
@@ -60,34 +61,6 @@ public class SistemaReservasDeportivas {
         }
         return false; // No se encontró la reserva
     }
-
-    /**
-     * Metodo que recibe como parametro un ID de pista y gestiona la iluminacion de la misma
-     * @param idPista
-     * @return true si encuentra el numero de pista, false si el ID es menor a 0 o supera el numero maximo de pistas
-     */
-    public boolean activarIluminacion(int idPista) {
-        if (idPista < 0 || idPista >= MAX_PISTAS) {
-            return false; // ID de pista inválido
-        }
-        iluminacion[idPista] = true;
-        return true;
-    }
-
-    /**
-     * Metodo que recibe como parametro un ID de pista y gestiona la iluminacion de la misma
-     * @param idPista
-     * @return true si encuentra el numero de pista, false si el ID es menor a 0 o supera el numero maximo de pistas
-     */
-    public boolean desactivarIluminacion(int idPista) {
-        if (idPista < 0 || idPista >= MAX_PISTAS) {
-            return false; // ID de pista inválido
-        }
-        iluminacion[idPista] = false;
-        return true;
-    }
-
-    
     /**
      * Este metodo recibe como parametros id de pista, fecha de la reserva y por cuanto tiempo se ha reservado
      * @param idPista
@@ -96,15 +69,21 @@ public class SistemaReservasDeportivas {
      * @return true si la pista esta disponible en la fecha y hora recibido con los parametros,
      * false si el ID no existe o ya esta reservada en la fecha y hora recibido con los parametros.
      */
-    public boolean verificarDisponibilidad(int idPista, String fecha, String hora) {
+    public boolean verificarDisponibilidad(int idPista, LocalDateTime fecha, String hora) {
         if (idPista < 0 || idPista >= MAX_PISTAS) {
             return false; // ID de pista inválido
         }
         for (Reserva r : reservas) {
-            if (r.getIdPista() == idPista && r.getFecha().equals(fecha)) {
+            if (r.getIdPista() == idPista && esFechaDisponible(fecha, r)) {
                 return false; // La pista no está disponible en esa fecha
             }
         }
         return true; // La pista está disponible
     }
+
+	private boolean esFechaDisponible(LocalDateTime fecha, Reserva r) {
+		return r.getFecha().equals(fecha);
+	}
+    
+    
 }
